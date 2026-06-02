@@ -1,0 +1,16 @@
+{
+  "name": "references-agent-skills",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "trigger.dev": "4.5.0-rc.4"
+  },
+  "dependencies": {
+    "@trigger.dev/build": "4.5.0-rc.4",
+    "@trigger.dev/sdk": "4.5.0-rc.4"
+  },
+  "scripts": {
+    "dev": "trigger dev",
+    "deploy": "trigger deploy"
+  }
+}

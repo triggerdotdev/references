@@ -1,0 +1,41 @@
+# dependencies
+node_modules
+
+# trigger.dev
+.trigger
+
+# build output
+dist
+out/
+.output
+.next/
+build/
+.turbo
+.tshy*
+*.tsbuildinfo
+
+# env files & secrets - commit only .env.example
+.env
+.env.*
+!.env.example
+.dev.vars
+*.pem
+
+# caches & coverage
+.cache
+coverage
+
+# pnpm provisioned node
+.pnpm
+
+# local link target (per-dev monorepo path, set by `pnpm run link`)
+.trigger-monorepo-path
+
+# deploy / misc
+.vercel
+
+# logs
+*.log
+
+# os
+.DS_Store

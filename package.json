@@ -1,0 +1,19 @@
+{
+  "name": "references",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": "20.20.2",
+    "pnpm": "10.33.2"
+  },
+  "scripts": {
+    "link": "node scripts/link.mjs",
+    "unlink": "pnpm install",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "lefthook": "^2.1.6",
+    "typescript": "5.5.4"
+  }
+}

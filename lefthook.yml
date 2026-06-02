@@ -1,0 +1,8 @@
+# Reference projects depend on published @trigger.dev/* versions. Linking to a
+# local monorepo build (pnpm run link) is dev-only and must never be committed
+# or pushed - this strips any active links so the pushed state always resolves
+# to published packages.
+pre-push:
+  jobs:
+    - name: 🔨 Remove pnpm links
+      run: pnpm run unlink

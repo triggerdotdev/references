@@ -1,0 +1,21 @@
+{
+  "name": "references-multi-client",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "trigger.dev": "4.5.0-rc.4",
+    "@types/node": "20.14.14",
+    "tsx": "4.17.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@trigger.dev/build": "4.5.0-rc.4",
+    "@trigger.dev/sdk": "4.5.0-rc.4"
+  },
+  "scripts": {
+    "dev": "trigger dev",
+    "deploy": "trigger deploy",
+    "trigger:external": "tsx src/external/main.ts",
+    "trigger:isolation": "tsx src/external/isolation.ts"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "references-prisma-6-output",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "trigger.dev": "4.5.0-rc.4",
+    "prisma": "6.19.0"
+  },
+  "dependencies": {
+    "@trigger.dev/build": "4.5.0-rc.4",
+    "@trigger.dev/sdk": "4.5.0-rc.4",
+    "@prisma/client": "6.19.0"
+  },
+  "scripts": {
+    "dev": "trigger dev",
+    "deploy": "trigger deploy",
+    "prisma:generate": "prisma generate --sql"
+  }
+}
