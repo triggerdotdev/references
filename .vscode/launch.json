@@ -20,6 +20,22 @@
     {
       "type": "node-terminal",
       "request": "launch",
+      "name": "d3-chat: dev",
+      "command": "pnpm exec trigger dev",
+      "cwd": "${workspaceFolder}/projects/d3-chat",
+      "sourceMaps": true
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "realtime-streams: dev",
+      "command": "pnpm exec trigger dev",
+      "cwd": "${workspaceFolder}/projects/realtime-streams",
+      "sourceMaps": true
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
       "name": "nextjs-realtime: dev",
       "command": "pnpm exec trigger dev",
       "cwd": "${workspaceFolder}/projects/nextjs-realtime",

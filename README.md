@@ -30,6 +30,7 @@ pnpm exec trigger login        # add -a <url> to target a self-hosted instance
 pnpm exec trigger dev
 ```
 
+> [!NOTE]
 > Running against a local self-hosted instance? The instance needs a project
 > matching each project's ref. The trigger.dev monorepo's `pnpm run db:seed`
 > pre-creates `hello-world`, `d3-chat`, and `realtime-streams` (for the latter two,
