@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "hello-world: dev",
+      "command": "pnpm exec trigger dev",
+      "cwd": "${workspaceFolder}/projects/hello-world",
+      "sourceMaps": true
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "hello-world: deploy (self-hosted)",
+      "command": "pnpm exec trigger deploy --self-hosted --load-image",
+      "cwd": "${workspaceFolder}/projects/hello-world",
+      "sourceMaps": true
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "nextjs-realtime: dev",
+      "command": "pnpm exec trigger dev",
+      "cwd": "${workspaceFolder}/projects/nextjs-realtime",
+      "sourceMaps": true
+    }
+  ]
+}
