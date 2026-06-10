@@ -1,8 +1,10 @@
 import RunButton from "@/components/RunButton";
 import BatchRunButton from "@/components/BatchRunButton";
+import TaskActionButton from "@/components/TaskActionButton";
 import TriggerButton from "@/components/TriggerButton";
 import TriggerButtonWithStreaming from "@/components/TriggerButtonWithStreaming";
 import { ImageUploadDropzone } from "@/components/ImageUploadButton";
+import { triggerBurstTask, triggerProgressTask, triggerTaggedRuns } from "@/app/actions";
 import { auth } from "@trigger.dev/sdk/v3";
 
 export default async function Home() {
@@ -19,6 +21,9 @@ export default async function Home() {
       <div className="flex items-center space-x-4 justify-center w-full">
         <RunButton />
         <BatchRunButton />
+        <TaskActionButton action={triggerProgressTask} label="Progress Task" />
+        <TaskActionButton action={triggerBurstTask} label="Burst Task" />
+        <TaskActionButton action={triggerTaggedRuns} label="Tagged Runs" />
         <TriggerButton accessToken={publicAccessToken} />
         <TriggerButtonWithStreaming accessToken={publicAccessToken} />
       </div>
