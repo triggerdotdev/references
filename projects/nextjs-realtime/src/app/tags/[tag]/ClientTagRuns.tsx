@@ -6,16 +6,19 @@ import type { exampleTask } from "@/trigger/example";
 import { useRealtimeRunsWithTag } from "@trigger.dev/react-hooks";
 
 export default function ClientTagRuns({
-  tag,
+  tags,
   publicAccessToken,
 }: {
-  tag: string;
+  tags: string[];
   publicAccessToken: string;
 }) {
-  const { runs, error } = useRealtimeRunsWithTag<typeof exampleTask>(tag, {
-    accessToken: publicAccessToken,
-    baseURL: process.env.NEXT_PUBLIC_TRIGGER_API_URL,
-  });
+  const { runs, error } = useRealtimeRunsWithTag<typeof exampleTask>(
+    tags.length === 1 ? tags[0] : tags,
+    {
+      accessToken: publicAccessToken,
+      baseURL: process.env.NEXT_PUBLIC_TRIGGER_API_URL,
+    }
+  );
 
   if (error) {
     return (
@@ -32,7 +35,7 @@ export default function ClientTagRuns({
   return (
     <div className="w-full min-h-screen bg-gray-900 text-gray-200 p-4 space-y-6">
       <h2 className="text-gray-400 text-sm text-center pt-4">
-        Runs tagged <span className="font-mono text-gray-200">{tag}</span>
+        Runs tagged <span className="font-mono text-gray-200">{tags.join(" + ")}</span>
       </h2>
       <BackgroundRunsTable runs={runs} />
     </div>

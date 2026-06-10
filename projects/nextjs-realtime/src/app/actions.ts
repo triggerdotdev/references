@@ -73,3 +73,21 @@ export async function triggerTaggedRuns() {
 
   redirect(`/tags/${encodeURIComponent(tag)}?publicAccessToken=${publicAccessToken}`);
 }
+
+// Multi-tag subscriptions match runs carrying ALL the tags: only the first run below
+// should appear on the /tags page even though both share the base tag.
+export async function triggerMultiTagRuns() {
+  const base = `demo:${randomUUID().slice(0, 8)}`;
+  const extra = `${base}:b`;
+
+  await tasks.batchTrigger<typeof exampleTask>("example", [
+    { payload: { id: randomUUID() }, options: { tags: [base, extra] } },
+    { payload: { id: randomUUID() }, options: { tags: [base] } },
+  ]);
+
+  const publicAccessToken = await auth.createPublicToken({
+    scopes: { read: { tags: [base, extra] } },
+  });
+
+  redirect(`/tags/${encodeURIComponent(`${base},${extra}`)}?publicAccessToken=${publicAccessToken}`);
+}

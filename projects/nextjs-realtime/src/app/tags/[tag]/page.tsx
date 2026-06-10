@@ -14,7 +14,8 @@ export default function TagRunsPage({
     notFound();
   }
 
-  return (
-    <ClientTagRuns tag={decodeURIComponent(params.tag)} publicAccessToken={publicAccessToken} />
-  );
+  // Comma-separated tags subscribe with multiple tags (runs must carry ALL of them).
+  const tags = decodeURIComponent(params.tag).split(",");
+
+  return <ClientTagRuns tags={tags} publicAccessToken={publicAccessToken} />;
 }

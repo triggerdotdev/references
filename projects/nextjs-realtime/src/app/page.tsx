@@ -4,7 +4,12 @@ import TaskActionButton from "@/components/TaskActionButton";
 import TriggerButton from "@/components/TriggerButton";
 import TriggerButtonWithStreaming from "@/components/TriggerButtonWithStreaming";
 import { ImageUploadDropzone } from "@/components/ImageUploadButton";
-import { triggerBurstTask, triggerProgressTask, triggerTaggedRuns } from "@/app/actions";
+import {
+  triggerBurstTask,
+  triggerMultiTagRuns,
+  triggerProgressTask,
+  triggerTaggedRuns,
+} from "@/app/actions";
 import { auth } from "@trigger.dev/sdk/v3";
 
 export default async function Home() {
@@ -24,6 +29,7 @@ export default async function Home() {
         <TaskActionButton action={triggerProgressTask} label="Progress Task" />
         <TaskActionButton action={triggerBurstTask} label="Burst Task" />
         <TaskActionButton action={triggerTaggedRuns} label="Tagged Runs" />
+        <TaskActionButton action={triggerMultiTagRuns} label="Multi-Tag Runs" />
         <TriggerButton accessToken={publicAccessToken} />
         <TriggerButtonWithStreaming accessToken={publicAccessToken} />
       </div>
