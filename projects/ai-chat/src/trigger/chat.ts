@@ -674,14 +674,25 @@ export const aiChatRaw = chat.customAgent({
       },
     });
 
+    // Continuation boots (fresh run) start with an empty accumulator —
+    // fetch stored history so turn 0 can seed it. Seeding must go THROUGH
+    // addIncoming: turn 0 replaces the accumulator, so a setMessages
+    // before the loop would be wiped.
+    let continuationSeed: UIMessage[] = [];
+    if (currentPayload.continuation) {
+      const row = await prisma.chat.findUnique({ where: { id: currentPayload.chatId } });
+      continuationSeed = (row?.messages ?? []) as unknown as UIMessage[];
+    }
+
     for (let turn = 0; turn < 100; turn++) {
       stop.reset();
 
-      const messages = await conversation.addIncoming(
-        currentPayload.message ? [currentPayload.message] : [],
-        currentPayload.trigger,
-        turn
-      );
+      const incoming = currentPayload.message ? [currentPayload.message] : [];
+      const turnInput =
+        turn === 0 && continuationSeed.length > 0
+          ? [...continuationSeed.filter((s) => !incoming.some((m) => m.id === s.id)), ...incoming]
+          : incoming;
+      const messages = await conversation.addIncoming(turnInput, currentPayload.trigger, turn);
 
       const turnClientData = (currentPayload.metadata ?? currentClientData) as
         | { userId: string; model?: string }
@@ -695,6 +706,13 @@ export const aiChatRaw = chat.customAgent({
       const modelOverride = turnClientData?.model ?? userContext.preferredModel ?? undefined;
       const useReasoning = useExtendedThinking(modelOverride);
       const combinedSignal = AbortSignal.any([runSignal, stop.signal]);
+
+      // Persist the incoming user message BEFORE streaming (the
+      // onTurnStart-equivalent) so a mid-stream reload doesn't lose it.
+      await prisma.chat.update({
+        where: { id: currentPayload.chatId },
+        data: { messages: conversation.uiMessages as unknown as ChatMessagesForWrite },
+      });
 
       const steeringSub = chat.messages.on(async (msg) => {
         if (msg.message) await conversation.steerAsync(msg.message);
@@ -744,9 +762,13 @@ export const aiChatRaw = chat.customAgent({
 
       if (runSignal.aborted) break;
 
+      // Race with a timeout — on stop-abort totalUsage never settles.
       let turnUsage: LanguageModelUsage | undefined;
       try {
-        turnUsage = await result.totalUsage;
+        turnUsage = await Promise.race([
+          result.totalUsage,
+          new Promise<undefined>((r) => setTimeout(() => r(undefined), 2000)),
+        ]);
       } catch {
         /* non-fatal */
       }
@@ -827,6 +849,17 @@ export const aiChatSession = chat
     });
 
     for await (const turn of session) {
+      // Continuation boots (fresh run) start with an empty accumulator —
+      // seed it from the DB, keeping any incoming message not yet persisted.
+      if (turn.continuation && turn.number === 0) {
+        const row = await prisma.chat.findUnique({ where: { id: turn.chatId } });
+        const stored = (row?.messages ?? []) as unknown as UIMessage[];
+        if (stored.length > 0) {
+          const incoming = turn.uiMessages.filter((m) => !stored.some((s) => s.id === m.id));
+          await turn.setMessages([...stored, ...incoming]);
+        }
+      }
+
       const turnClientData = (turn.clientData ?? clientData) as
         | { userId: string; model?: string }
         | undefined;
@@ -836,6 +869,13 @@ export const aiChatSession = chat
 
       const modelOverride = turnClientData?.model ?? userContext.preferredModel ?? undefined;
       const useReasoning = useExtendedThinking(modelOverride);
+
+      // Persist the incoming user message BEFORE streaming (the
+      // onTurnStart-equivalent) so a mid-stream reload doesn't lose it.
+      await prisma.chat.update({
+        where: { id: turn.chatId },
+        data: { messages: turn.uiMessages as unknown as ChatMessagesForWrite },
+      });
 
       const result = streamText({
         ...chat.toStreamTextOptions({ registry }),
@@ -904,6 +944,10 @@ export const aiChatHydrated = chat
     id: "ai-chat-hydrated",
     idleTimeoutInSeconds: 60,
 
+    // Same tool set as `ai-chat` so head-start tool-call handovers can
+    // execute post-handover (see /api/chat-hydrated).
+    tools: chatTools,
+
     // Load message history from the database on every turn.
     // The frontend's accumulated messages are ignored — the DB is the
     // single source of truth. `upsertIncomingMessage` handles HITL
@@ -915,9 +959,12 @@ export const aiChatHydrated = chat
       const stored = (record?.messages as unknown as UIMessage[]) ?? [];
 
       if (upsertIncomingMessage(stored, { trigger, incomingMessages })) {
-        await prisma.chat.update({
+        // Upsert, not update: on a head-start first turn there's no
+        // preload, so the row may not exist yet when the hook fires.
+        await prisma.chat.upsert({
           where: { id: chatId },
-          data: { messages: stored as unknown as ChatMessagesForWrite },
+          create: { id: chatId, title: "New chat", messages: stored as unknown as ChatMessagesForWrite },
+          update: { messages: stored as unknown as ChatMessagesForWrite },
         });
       }
 
@@ -1007,13 +1054,14 @@ export const aiChatHydrated = chat
       ]);
     },
 
-    run: async ({ messages, clientData, stopSignal }) => {
+    run: async ({ messages, clientData, stopSignal, tools }) => {
       return streamText({
-        ...chat.toStreamTextOptions(),
+        ...chat.toStreamTextOptions({ tools }),
         model: languageModelForChatTurn(
           clientData?.model ?? userContext.preferredModel ?? undefined
         ),
         messages,
+        stopWhen: stepCountIs(10),
         abortSignal: stopSignal,
       });
     },
