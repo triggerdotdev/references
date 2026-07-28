@@ -3,4 +3,4 @@ packages:
   - "packages/*"
 
 # Match the trigger.dev monorepo toolchain so linked builds behave identically.
-useNodeVersion: "22.23.1"
+useNodeVersion: "24.18.0"
