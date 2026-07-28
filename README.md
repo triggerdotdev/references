@@ -16,7 +16,7 @@ local checkout of the framework.
 
 ## Setup
 
-Requires Node `20.20.2` and pnpm `10.33.2` (pnpm provisions Node automatically).
+Requires Node `24.18.0` and pnpm `10.33.2` (pnpm provisions Node automatically).
 
 ```bash
 pnpm install
