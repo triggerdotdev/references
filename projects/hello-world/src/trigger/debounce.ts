@@ -416,7 +416,7 @@ export const processWebhookBatch = task({
 });
 
 export const handleWebhook = task({
-  id: "handle-webhook",
+  id: "handle-webhook-debounce",
   run: async (payload: { source: string; eventType: string; webhookId: string; data: unknown }) => {
     logger.info("Received webhook", {
       source: payload.source,

@@ -3,12 +3,12 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "trigger.dev": "4.5.0-rc.4"
+    "trigger.dev": "4.5.10"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
-    "@trigger.dev/build": "4.5.0-rc.4",
-    "@trigger.dev/sdk": "4.5.0-rc.4",
+    "@trigger.dev/build": "4.5.10",
+    "@trigger.dev/sdk": "4.5.10",
     "ai": "^6.0.116",
     "arktype": "^2.0.0",
     "openai": "^4.97.0",
