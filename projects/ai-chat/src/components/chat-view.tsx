@@ -75,7 +75,13 @@ export function ChatView({
     // session state from response headers and writes directly to
     // `session.in` for turn 2 onward — same direct-trigger path as
     // when `headStart` is unset.
-    headStart: useHandover ? "/api/chat" : undefined,
+    // The hydrated agent has its own head-start route so the
+    // headStart × hydrateMessages combination is testable end-to-end.
+    headStart: useHandover
+      ? taskMode === "ai-chat-hydrated"
+        ? "/api/chat-hydrated"
+        : "/api/chat"
+      : undefined,
   });
 
   const handleFirstMessage = useCallback(
